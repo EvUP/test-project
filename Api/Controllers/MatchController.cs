@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizGamePlatform.Backend.Application.Abstractions;
 using QuizGamePlatform.Backend.Application.Contracts;
@@ -84,13 +83,6 @@ namespace QuizGamePlatform.Backend.Api.Controllers
             }
 
             return Ok(match);
-        }
-
-        [HttpGet("test-admin")]
-        [Authorize(Policy = "RequireAdmin")]
-        public IActionResult StartMatch()
-        {
-            return Ok(new { message = "Матч успешно запущен администратором!" });
         }
     }
 }

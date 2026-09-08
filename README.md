@@ -32,6 +32,14 @@
 - Swagger: `https://localhost:53506/swagger` (для https может понадобиться `dotnet dev-certs https --trust`)
 - Проверка живости: `GET /health`
 
+## Keycloak
+
+Realm `quizgame` импортируется из `keycloak/realm-export.json` при первом запуске.
+В Swagger кнопка Authorize открывает вход и регистрацию через Keycloak (Authorization Code + PKCE).
+`GET /api/Auth/me` требует токен; права доступа к игровым операциям будут добавлены отдельно.
+Самостоятельный сброс пароля отключён до настройки SMTP в realm.
+
+
 ## Тесты
 
 ```bash
