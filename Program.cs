@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using QuizGamePlatform.Backend.Application.Options;
 using QuizGamePlatform.Backend.Api.Handlers;
 using QuizGamePlatform.Backend.Application.Extensions;
 using QuizGamePlatform.Backend.DataAccess.HealthChecks;
@@ -15,7 +17,9 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddKeycloakAuthentication(builder.Configuration);
+builder.Services.AddSwaggerWithKeycloak();
 
 builder.AddAppServices();
 
@@ -36,6 +40,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+var keycloak = app.Services.GetRequiredService<IOptions<KeycloakOptions>>().Value;
 
 await app.MigrateAndSeedIfNeededAsync();
 
@@ -44,9 +49,18 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Quiz API v1");
+        options.OAuthClientId(keycloak.ClientId);
+        options.OAuthAppName("Quest Game - Swagger");
+        options.OAuthUsePkce();
+    });
     app.UseCors();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");
